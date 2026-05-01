@@ -46,4 +46,22 @@ public class CatapultShooter : MonoBehaviour
             rb.AddForce(forceDirection * launchForce, ForceMode2D.Impulse);
         }
     }
+    public void HideReloadUI()
+    {
+        if (reloadUI != null)
+        {
+            reloadUI.gameObject.SetActive(false);
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (Time.timeScale == 0f)
+        {
+            if (reloadUI != null && reloadUI.gameObject.activeSelf)
+            {
+                reloadUI.gameObject.SetActive(false);
+            }
+        }
+    }
 }

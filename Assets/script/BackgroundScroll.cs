@@ -6,6 +6,8 @@ public class BackgroundScroll : MonoBehaviour
     private float backgroundWidth;
     public Transform otherBackground;
 
+    public float overlapAmount = 0.1f;
+
     void Start()
     {
         backgroundWidth = GetComponent<SpriteRenderer>().bounds.size.x;
@@ -18,7 +20,8 @@ public class BackgroundScroll : MonoBehaviour
         if (transform.position.x <= -backgroundWidth)
         {
             Vector3 newPos = otherBackground.position;
-            newPos.x += backgroundWidth;
+            newPos.x += (backgroundWidth - overlapAmount);
+
             transform.position = newPos;
         }
     }

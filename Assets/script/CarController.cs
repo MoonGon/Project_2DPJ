@@ -31,6 +31,15 @@ public class CarController : MonoBehaviour
     public TextMeshProUGUI winFinalScoreText;
     public TextMeshProUGUI loseFinalScoreText;
 
+    [Header("Distance Settings")]
+    public TextMeshProUGUI distanceText;
+    private float distanceTraveled = 0f;
+
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip coinSound;
+    public AudioClip crashSound;
+
     void Start()
     {
         Time.timeScale = 1f;
@@ -54,6 +63,15 @@ public class CarController : MonoBehaviour
             }
         }
 
+        if (Time.timeScale > 0f)
+        {
+            distanceTraveled += moveSpeed * Time.deltaTime;
+            if (distanceText != null)
+            {
+                distanceText.text = "Distance: " + distanceTraveled.ToString("F0") + "m";
+            }
+        }
+
         float baseY = isTopLane ? laneTop.position.y : laneBottom.position.y;
         float targetY = baseY;
 
@@ -61,11 +79,16 @@ public class CarController : MonoBehaviour
         {
             jumpTimer += Time.deltaTime;
             float progress = jumpTimer / jumpDuration;
+
             if (Input.GetKey(KeyCode.Space) && progress < 0.5f)
             {
                 currentPeakHeight = Mathf.Lerp(normalJumpHeight, highJumpHeight, progress / 0.5f);
             }
-            if (progress >= 1f) isJumping = false;
+
+            if (progress >= 1f)
+            {
+                isJumping = false;
+            }
             else
             {
                 float jumpOffset = Mathf.Sin(progress * Mathf.PI) * currentPeakHeight;
@@ -96,6 +119,8 @@ public class CarController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle"))
         {
+            if (audioSource != null && crashSound != null)
+                audioSource.PlayOneShot(crashSound);
             health--;
             Destroy(collision.gameObject);
             UpdateStatsUI();
@@ -104,6 +129,8 @@ public class CarController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Coin"))
         {
+            if (audioSource != null && coinSound != null)
+                audioSource.PlayOneShot(coinSound);
             coinCount += pointsPerCoin;
             Destroy(collision.gameObject);
             UpdateStatsUI();
@@ -144,6 +171,5 @@ public class CarController : MonoBehaviour
     public void GoToHome()
     {
         SceneManager.LoadScene("MainMenu");
-        Debug.Log("กลับหน้าหลัก");
     }
 }
